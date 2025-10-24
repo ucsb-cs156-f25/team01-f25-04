@@ -18,11 +18,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity(name = "UCSBDiningCommonsMenuItem")
 public class UCSBDiningCommonsMenuItem {
-  @Id private String code;
+  // @Id private String code;
+  @Id private Long id;
+
+  private String diningCommonsCode;
   private String name;
-  private boolean hasSackMeal;
-  private boolean hasTakeOutMeal;
-  private boolean hasDiningCam;
-  private Double latitude;
-  private Double longitude;
+  private String station;
 }

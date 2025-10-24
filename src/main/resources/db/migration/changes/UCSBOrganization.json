@@ -1,7 +1,7 @@
 { "databaseChangeLog": [
     {
         "changeSet": {
-          "id": "UCSBDiningCommons-1",
+          "id": "UCSBOrganization-1",
           "author": "davey-j1",
           "preConditions": [
             {

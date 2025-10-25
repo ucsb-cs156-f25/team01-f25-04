@@ -80,7 +80,7 @@ public class UCSBOrganizationControllerTests extends ControllerTestCase {
             .orgCode("SEC")
             .orgTranslationShort("second-organ")
             .orgTranslation("second-organization")
-            .inactive(false)
+            .inactive(true)
             .build();
 
     ArrayList<UCSBOrganization> expectedOrganizations = new ArrayList<>();
@@ -105,12 +105,43 @@ public class UCSBOrganizationControllerTests extends ControllerTestCase {
   public void an_admin_user_can_post_a_new_organization() throws Exception {
     // arrange
 
-    UCSBOrganization organization3 =
+    UCSBOrganization organization1 =
         UCSBOrganization.builder()
             .orgCode("FIR")
             .orgTranslationShort("first-organ")
             .orgTranslation("first-organization")
             .inactive(false)
+            .build();
+
+    when(ucsbOrganizationRepository.save(eq(organization1))).thenReturn(organization1);
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(
+                post("/api/ucsborganization/post?orgCode=FIR&orgTranslationShort=first-organ&orgTranslation=first-organization&inactive=false")
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(ucsbOrganizationRepository, times(1)).save(organization1);
+    String expectedJson = mapper.writeValueAsString(organization1);
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void an_admin_user_can_post_a_new_organization_another_test() throws Exception {
+    // arrange
+
+    UCSBOrganization organization3 =
+        UCSBOrganization.builder()
+            .orgCode("FIR")
+            .orgTranslationShort("first-organ")
+            .orgTranslation("first-organization")
+            .inactive(true)
             .build();
 
     when(ucsbOrganizationRepository.save(eq(organization3))).thenReturn(organization3);
@@ -119,7 +150,7 @@ public class UCSBOrganizationControllerTests extends ControllerTestCase {
     MvcResult response =
         mockMvc
             .perform(
-                post("/api/ucsborganization/post?orgCode=FIR&orgTranslationShort=first-organ&orgTranslation=first-organization&inactive=false")
+                post("/api/ucsborganization/post?orgCode=FIR&orgTranslationShort=first-organ&orgTranslation=first-organization&inactive=true")
                     .with(csrf()))
             .andExpect(status().isOk())
             .andReturn();

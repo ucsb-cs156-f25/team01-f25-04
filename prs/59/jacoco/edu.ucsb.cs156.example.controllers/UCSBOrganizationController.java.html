@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
    * @param orgTranslation full name of the organization
    * @param inactive whether or not the organization is inactive
    */
-  @Operation(summary = &quot;Create a new commons&quot;)
+  @Operation(summary = &quot;Create a new organization&quot;)
   @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
   @PostMapping(&quot;/post&quot;)
   public UCSBOrganization postOrganization(

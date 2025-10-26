@@ -43,7 +43,7 @@ public class UCSBOrganizationController extends ApiController {
    * @param orgTranslation full name of the organization
    * @param inactive whether or not the organization is inactive
    */
-  @Operation(summary = "Create a new commons")
+  @Operation(summary = "Create a new organization")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PostMapping("/post")
   public UCSBOrganization postOrganization(

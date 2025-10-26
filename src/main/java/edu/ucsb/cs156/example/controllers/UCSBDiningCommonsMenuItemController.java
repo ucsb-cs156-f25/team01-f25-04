@@ -6,11 +6,14 @@ import edu.ucsb.cs156.example.repositories.UCSBDiningCommonsMenuItemRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,28 +27,15 @@ public class UCSBDiningCommonsMenuItemController extends ApiController {
 
   @Autowired UCSBDiningCommonsMenuItemRepository ucsbDiningCommonsMenuItemRepository;
 
-  /**
-   * THis method returns a list of all ucsbdiningcommons.
-   *
-   * @return a list of all ucsbdiningcommons
-   */
+  /** List all dining commons menu items */
   @Operation(summary = "List all ucsb dining commons menu items")
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("/all")
   public Iterable<UCSBDiningCommonsMenuItem> allUCSBDiningCommonsMenuItem() {
-    Iterable<UCSBDiningCommonsMenuItem> ucsbDiningCommonsMenuItem =
-        ucsbDiningCommonsMenuItemRepository.findAll();
-    return ucsbDiningCommonsMenuItem;
+    return ucsbDiningCommonsMenuItemRepository.findAll();
   }
 
-  /**
-   * This method creates a new diningcommons. Accessible only to users with the role "ROLE_ADMIN".
-   *
-   * @param diningCommonsCode code ...
-   * @param name name...
-   * @param station ...
-   * @return return item
-   */
+  /** Create a new dining commons menu item (admin only) */
   @Operation(summary = "Create a new commons menu item")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PostMapping("/post")
@@ -59,29 +49,38 @@ public class UCSBDiningCommonsMenuItemController extends ApiController {
     item.setName(name);
     item.setStation(station);
 
-    UCSBDiningCommonsMenuItem savedCommons = ucsbDiningCommonsMenuItemRepository.save(item);
-
-    return savedCommons;
+    return ucsbDiningCommonsMenuItemRepository.save(item);
   }
 
-  /**
-   * Get a single date by id
-   *
-   * @param id the id of the date
-   * @return a UCSBDate
-   */
-  @Operation(summary = "Get a single date")
+  /** Get a single menu item by id */
+  @Operation(summary = "Get a single menu item by id")
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("")
   public UCSBDiningCommonsMenuItem getById(@Parameter(name = "id") @RequestParam Long id) {
-    UCSBDiningCommonsMenuItem MenuItem =
+    return ucsbDiningCommonsMenuItemRepository
+        .findById(id)
+        .orElseThrow(
+            () -> new EntityNotFoundException(UCSBDiningCommonsMenuItem.class, String.valueOf(id)));
+  }
+
+  /** Update a single menu item (admin only) */
+  @Operation(summary = "Update a single menu item")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PutMapping("")
+  public UCSBDiningCommonsMenuItem updateUCSBDiningCommonsMenuItem(
+      @Parameter(name = "id") @RequestParam Long id,
+      @RequestBody @Valid UCSBDiningCommonsMenuItem incoming) {
+
+    UCSBDiningCommonsMenuItem menuItem =
         ucsbDiningCommonsMenuItemRepository
             .findById(id)
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        UCSBDiningCommonsMenuItem.class, String.valueOf(id)));
+            .orElseThrow(() -> new EntityNotFoundException(UCSBDiningCommonsMenuItem.class, id));
 
-    return MenuItem;
+    // Update fields from incoming object
+    menuItem.setDiningCommonsCode(incoming.getDiningCommonsCode());
+    menuItem.setName(incoming.getName());
+    menuItem.setStation(incoming.getStation());
+
+    return ucsbDiningCommonsMenuItemRepository.save(menuItem);
   }
 }

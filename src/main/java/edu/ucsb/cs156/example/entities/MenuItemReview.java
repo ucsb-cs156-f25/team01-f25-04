@@ -10,21 +10,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** This is a JPA entity that represents a Help Request from a dev. */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity(name = "helprequest")
-public class HelpRequest {
+@Entity(name = "menuitemreview")
+public class MenuItemReview {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  private String requesterEmail;
-  private String teamId;
-  private String tableOrBreakoutRoom;
-  private LocalDateTime requestTime;
-  private String explanation;
-  private boolean solved;
+  private long itemId;
+  private String reviewerEmail;
+  private int stars;
+  private LocalDateTime dateReviewed;
+  private String comments;
 }

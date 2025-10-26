@@ -50,7 +50,7 @@ public class HelpRequestControllerTests extends ControllerTestCase {
 
   @WithMockUser(roles = {"USER"})
   @Test
-  public void logged_in_user_can_get_all_ucsbdates() throws Exception {
+  public void logged_in_user_can_get_all__help_requests() throws Exception {
 
     // arrange
     LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");

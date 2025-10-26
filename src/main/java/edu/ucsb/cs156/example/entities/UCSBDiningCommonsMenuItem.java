@@ -4,27 +4,28 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** This is a JPA entity that represents a Help Request from a dev. */
+/**
+ * This is a JPA entity that represents a UCSBDiningCommons
+ *
+ * <p>A UCSBDiningCommons is a dining commons at UCSB
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity(name = "helprequest")
-public class HelpRequest {
+@Entity(name = "UCSBDiningCommonsMenuItem")
+public class UCSBDiningCommonsMenuItem {
+  // @Id private String code;
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
-  private String requesterEmail;
-  private String teamId;
-  private String tableOrBreakoutRoom;
-  private LocalDateTime requestTime;
-  private String explanation;
-  private boolean solved;
+  private String diningCommonsCode;
+  private String name;
+  private String station;
 }

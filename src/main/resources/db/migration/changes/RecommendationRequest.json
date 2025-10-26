@@ -70,7 +70,7 @@
                     }
                   }
                 ],
-                "tableName": "RecommendationRequest"
+                "tableName": "recommendationrequest"
               }
             }
           ]

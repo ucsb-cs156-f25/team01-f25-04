@@ -89,7 +89,7 @@ public class UCSBDiningCommonsMenuItemController extends ApiController {
    * Delete a UCSBDiningCommonMenuItem
    *
    * @param id the id of the menu item to delete
-   * @return a message indicating the date was deleted
+   * @return a message indicating the menu item was deleted
    */
   @Operation(summary = "Delete a UCSBDiningCommonsMenuItem")
   @PreAuthorize("hasRole('ROLE_ADMIN')")

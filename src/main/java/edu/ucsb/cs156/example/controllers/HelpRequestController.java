@@ -126,7 +126,7 @@ public class HelpRequestController extends ApiController {
   }
 
   /**
-   * Update a single date
+   * Update a single Help Request
    *
    * @param id id of the Help Request to update
    * @param incoming the new Help Request

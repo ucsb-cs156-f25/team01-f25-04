@@ -226,7 +226,7 @@ public class MenuItemReviewControllerTests extends ControllerTestCase {
     MvcResult response =
         mockMvc
             .perform(
-                put("/api/menureviewitem?id=67")
+                put("/api/menuitemreview?id=67")
                     .contentType(MediaType.APPLICATION_JSON)
                     .characterEncoding("utf-8")
                     .content(requestBody)
@@ -265,7 +265,7 @@ public class MenuItemReviewControllerTests extends ControllerTestCase {
     MvcResult response =
         mockMvc
             .perform(
-                put("/api/menureviewitem?id=67")
+                put("/api/menuitemreview?id=67")
                     .contentType(MediaType.APPLICATION_JSON)
                     .characterEncoding("utf-8")
                     .content(requestBody)
@@ -276,7 +276,7 @@ public class MenuItemReviewControllerTests extends ControllerTestCase {
     // assert
     verify(menuItemReviewRepository, times(1)).findById(67L);
     Map<String, Object> json = responseToJson(response);
-    assertEquals("Menu review item with id 67 not found", json.get("message"));
+    assertEquals("MenuItemReview with id 67 not found", json.get("message"));
   }
 
   @WithMockUser(roles = {"ADMIN", "USER"})

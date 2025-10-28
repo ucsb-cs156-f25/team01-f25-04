@@ -86,15 +86,15 @@ import org.springframework.web.bind.annotation.RestController;
   }
 
   /**
-   * Delete a UCSBDate
+   * Delete a UCSBDiningCommonMenuItem
    *
-   * @param id the id of the date to delete
+   * @param id the id of the menu item to delete
    * @return a message indicating the date was deleted
    */
   @Operation(summary = &quot;Delete a UCSBDiningCommonsMenuItem&quot;)
   @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
   @DeleteMapping(&quot;&quot;)
-  public Object deleteUCSBDate(@Parameter(name = &quot;id&quot;) @RequestParam Long id) {
+  public Object deleteUCSBDiningCommonMenuItem(@Parameter(name = &quot;id&quot;) @RequestParam Long id) {
 <span class="fc" id="L98">    UCSBDiningCommonsMenuItem menuItem =</span>
         ucsbDiningCommonsMenuItemRepository
 <span class="fc" id="L100">            .findById(id)</span>

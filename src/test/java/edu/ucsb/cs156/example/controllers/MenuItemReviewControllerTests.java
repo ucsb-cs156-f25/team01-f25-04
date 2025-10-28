@@ -195,7 +195,7 @@ public class MenuItemReviewControllerTests extends ControllerTestCase {
 
   @WithMockUser(roles = {"ADMIN", "USER"})
   @Test
-  public void admin_can_edit_an_existing_menureviewitem() throws Exception {
+  public void admin_can_edit_an_existing_menuitemreview() throws Exception {
     // arrange
     LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");
     MenuItemReview menuItemReviewOrig =
@@ -212,7 +212,7 @@ public class MenuItemReviewControllerTests extends ControllerTestCase {
     MenuItemReview menuItemReviewEdited =
         MenuItemReview.builder()
             .itemId(29)
-            .reviewerEmail("carumugam@ucsb.edu")
+            .reviewerEmail("rhung@ucsb.edu")
             .stars(5)
             .dateReviewed(ldt2)
             .comments("tastes good")
@@ -244,7 +244,7 @@ public class MenuItemReviewControllerTests extends ControllerTestCase {
 
   @WithMockUser(roles = {"ADMIN", "USER"})
   @Test
-  public void admin_cannot_edit_menureviewitem_that_does_not_exist() throws Exception {
+  public void admin_cannot_edit_menuitemreview_that_does_not_exist() throws Exception {
     // arrange
 
     LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");

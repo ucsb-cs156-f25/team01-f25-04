@@ -70,7 +70,7 @@ import org.springframework.web.bind.annotation.RestController;
    * @param id the id of the date
    * @return a UCSBDate
    */
-  @Operation(summary = &quot;Get a single date&quot;)
+  @Operation(summary = &quot;Get a single menu item&quot;)
   @PreAuthorize(&quot;hasRole('ROLE_USER')&quot;)
   @GetMapping(&quot;&quot;)
   public UCSBDiningCommonsMenuItem getById(@Parameter(name = &quot;id&quot;) @RequestParam Long id) {

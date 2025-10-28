@@ -25,7 +25,7 @@
               "columns": [
                 {
                   "column": {
-                    "name": "id",
+                    "name": "ID",
                     "type": "BIGINT",
                     "autoIncrement": true,
                     "constraints": {

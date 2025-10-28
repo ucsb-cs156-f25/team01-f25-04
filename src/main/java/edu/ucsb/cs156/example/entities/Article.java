@@ -10,21 +10,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** This is a JPA entity that represents a Help Request from a dev. */
+/**
+ * This is a JPA entity that represents an Article
+ *
+ * <p>An article is a descriptive note that contains information/url.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity(name = "helprequest")
-public class HelpRequest {
+@Entity(name = "articles")
+public class Article {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  private String requesterEmail;
-  private String teamId;
-  private String tableOrBreakoutRoom;
-  private LocalDateTime requestTime;
+  private String title;
+  private String url;
   private String explanation;
-  private boolean solved;
+  private String email;
+  private LocalDateTime dateAdded;
 }

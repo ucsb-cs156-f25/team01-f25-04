@@ -12,7 +12,7 @@
             "not": [
               {
                 "tableExists": {
-                  "tableName": "ucsbdining_commons_menu_item"
+                  "tableName": "UCSBDiningCommonsMenuItems",
                 }
               }
             ]
@@ -21,7 +21,7 @@
         "changes": [
           {
             "createTable": {
-              "tableName": "ucsbdining_commons_menu_item",
+              "tableName": "UCSBDiningCommonsMenuItems",
               "columns": [
                 {
                   "column": {
@@ -36,7 +36,7 @@
                 },
                 {
                   "column": {
-                    "name": "dining_commons_code",
+                    "name": "diningCommonsCode",
                     "type": "VARCHAR(255)",
                     "constraints": {
                       "nullable": false

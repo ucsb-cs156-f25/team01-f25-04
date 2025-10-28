@@ -86,15 +86,15 @@ public class UCSBDiningCommonsMenuItemController extends ApiController {
   }
 
   /**
-   * Delete a UCSBDate
+   * Delete a UCSBDiningCommonMenuItem
    *
-   * @param id the id of the date to delete
+   * @param id the id of the menu item to delete
    * @return a message indicating the date was deleted
    */
   @Operation(summary = "Delete a UCSBDiningCommonsMenuItem")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @DeleteMapping("")
-  public Object deleteUCSBDate(@Parameter(name = "id") @RequestParam Long id) {
+  public Object deleteUCSBDiningCommonMenuItem(@Parameter(name = "id") @RequestParam Long id) {
     UCSBDiningCommonsMenuItem menuItem =
         ucsbDiningCommonsMenuItemRepository
             .findById(id)

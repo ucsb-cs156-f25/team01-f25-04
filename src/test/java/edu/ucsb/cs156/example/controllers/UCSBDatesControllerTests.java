@@ -1,148 +1,334 @@
 package edu.ucsb.cs156.example.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import edu.ucsb.cs156.example.ControllerTestCase;
 import edu.ucsb.cs156.example.entities.UCSBDate;
-import edu.ucsb.cs156.example.errors.EntityNotFoundException;
 import edu.ucsb.cs156.example.repositories.UCSBDateRepository;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import edu.ucsb.cs156.example.repositories.UserRepository;
+import edu.ucsb.cs156.example.testconfig.TestConfig;
 import java.time.LocalDateTime;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MvcResult;
 
-/** This is a REST controller for UCSBDates */
-@Tag(name = "UCSBDates")
-@RequestMapping("/api/ucsbdates")
-@RestController
-@Slf4j
-public class UCSBDatesController extends ApiController {
+@WebMvcTest(controllers = UCSBDatesController.class)
+@Import(TestConfig.class)
+public class UCSBDatesControllerTests extends ControllerTestCase {
 
-  @Autowired UCSBDateRepository ucsbDateRepository;
+  @MockBean UCSBDateRepository ucsbDateRepository;
 
-  /**
-   * List all UCSB dates
-   *
-   * @return an iterable of UCSBDate
-   */
-  @Operation(summary = "List all ucsb dates")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  @GetMapping("/all")
-  public Iterable<UCSBDate> allUCSBDates() {
-    Iterable<UCSBDate> dates = ucsbDateRepository.findAll();
-    return dates;
+  @MockBean UserRepository userRepository;
+
+  // Authorization tests for /api/ucsbdates/admin/all
+
+  @Test
+  public void logged_out_users_cannot_get_all() throws Exception {
+    mockMvc
+        .perform(get("/api/ucsbdates/all"))
+        .andExpect(status().is(403)); // logged out users can't get all
   }
 
-  /**
-   * Get a single date by id
-   *
-   * @param id the id of the date
-   * @return a UCSBDate
-   */
-  @Operation(summary = "Get a single date")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  @GetMapping("")
-  public UCSBDate getById(@Parameter(name = "id") @RequestParam Long id) {
-    UCSBDate ucsbDate =
-        ucsbDateRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(UCSBDate.class, id));
-
-    return ucsbDate;
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_users_can_get_all() throws Exception {
+    mockMvc.perform(get("/api/ucsbdates/all")).andExpect(status().is(200)); // logged
   }
 
-  /**
-   * Create a new date
-   *
-   * @param quarterYYYYQ the quarter in the format YYYYQ
-   * @param name the name of the date
-   * @param localDateTime the date
-   * @return the saved ucsbdate
-   */
-  @Operation(summary = "Create a new date")
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  @PostMapping("/post")
-  public UCSBDate postUCSBDate(
-      @Parameter(name = "quarterYYYYQ") @RequestParam String quarterYYYYQ,
-      @Parameter(name = "name") @RequestParam String name,
-      @Parameter(
-              name = "localDateTime",
-              description =
-                  "date (in iso format, e.g. YYYY-mm-ddTHH:MM:SS; see https://en.wikipedia.org/wiki/ISO_8601)")
-          @RequestParam("localDateTime")
-          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-          LocalDateTime localDateTime)
-      throws JsonProcessingException {
-
-    // For an explanation of @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    // See: https://www.baeldung.com/spring-date-parameters
-
-    log.info("localDateTime={}", localDateTime);
-
-    UCSBDate ucsbDate = new UCSBDate();
-    ucsbDate.setQuarterYYYYQ(quarterYYYYQ);
-    ucsbDate.setName(name);
-    ucsbDate.setLocalDateTime(localDateTime);
-
-    UCSBDate savedUcsbDate = ucsbDateRepository.save(ucsbDate);
-
-    return savedUcsbDate;
+  @Test
+  public void logged_out_users_cannot_get_by_id() throws Exception {
+    mockMvc
+        .perform(get("/api/ucsbdates?id=7"))
+        .andExpect(status().is(403)); // logged out users can't get by id
   }
 
-  /**
-   * Delete a UCSBDate
-   *
-   * @param id the id of the date to delete
-   * @return a message indicating the date was deleted
-   */
-  @Operation(summary = "Delete a UCSBDate")
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  @DeleteMapping("")
-  public Object deleteUCSBDate(@Parameter(name = "id") @RequestParam Long id) {
-    UCSBDate ucsbDate =
-        ucsbDateRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(UCSBDate.class, id));
+  // Authorization tests for /api/ucsbdates/post
+  // (Perhaps should also have these for put and delete)
 
-    ucsbDateRepository.delete(ucsbDate);
-    return genericMessage("UCSBDate with id %s deleted".formatted(id));
+  @Test
+  public void logged_out_users_cannot_post() throws Exception {
+    mockMvc.perform(post("/api/ucsbdates/post")).andExpect(status().is(403));
   }
 
-  /**
-   * Update a single date
-   *
-   * @param id id of the date to update
-   * @param incoming the new date
-   * @return the updated date object
-   */
-  @Operation(summary = "Update a single date")
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  @PutMapping("")
-  public UCSBDate updateUCSBDate(
-      @Parameter(name = "id") @RequestParam Long id, @RequestBody @Valid UCSBDate incoming) {
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_regular_users_cannot_post() throws Exception {
+    mockMvc
+        .perform(post("/api/ucsbdates/post"))
+        .andExpect(status().is(403)); // only admins can post
+  }
+
+  // // Tests with mocks for database actions
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_that_logged_in_user_can_get_by_id_when_the_id_exists() throws Exception {
+
+    // arrange
+    LocalDateTime ldt = LocalDateTime.parse("2022-01-03T00:00:00");
 
     UCSBDate ucsbDate =
-        ucsbDateRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(UCSBDate.class, id));
+        UCSBDate.builder()
+            .name("firstDayOfClasses")
+            .quarterYYYYQ("20222")
+            .localDateTime(ldt)
+            .build();
 
-    ucsbDate.setQuarterYYYYQ(incoming.getQuarterYYYYQ());
-    ucsbDate.setName(incoming.getName());
-    ucsbDate.setLocalDateTime(incoming.getLocalDateTime());
+    when(ucsbDateRepository.findById(eq(7L))).thenReturn(Optional.of(ucsbDate));
 
-    ucsbDateRepository.save(ucsbDate);
+    // act
+    MvcResult response =
+        mockMvc.perform(get("/api/ucsbdates?id=7")).andExpect(status().isOk()).andReturn();
 
-    return ucsbDate;
+    // assert
+
+    verify(ucsbDateRepository, times(1)).findById(eq(7L));
+    String expectedJson = mapper.writeValueAsString(ucsbDate);
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_that_logged_in_user_can_get_by_id_when_the_id_does_not_exist() throws Exception {
+
+    // arrange
+
+    when(ucsbDateRepository.findById(eq(7L))).thenReturn(Optional.empty());
+
+    // act
+    MvcResult response =
+        mockMvc.perform(get("/api/ucsbdates?id=7")).andExpect(status().isNotFound()).andReturn();
+
+    // assert
+
+    verify(ucsbDateRepository, times(1)).findById(eq(7L));
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("EntityNotFoundException", json.get("type"));
+    assertEquals("UCSBDate with id 7 not found", json.get("message"));
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_user_can_get_all_ucsbdates() throws Exception {
+
+    // arrange
+    LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");
+
+    UCSBDate ucsbDate1 =
+        UCSBDate.builder()
+            .name("firstDayOfClasses")
+            .quarterYYYYQ("20222")
+            .localDateTime(ldt1)
+            .build();
+
+    LocalDateTime ldt2 = LocalDateTime.parse("2022-03-11T00:00:00");
+
+    UCSBDate ucsbDate2 =
+        UCSBDate.builder()
+            .name("lastDayOfClasses")
+            .quarterYYYYQ("20222")
+            .localDateTime(ldt2)
+            .build();
+
+    ArrayList<UCSBDate> expectedDates = new ArrayList<>();
+    expectedDates.addAll(Arrays.asList(ucsbDate1, ucsbDate2));
+
+    when(ucsbDateRepository.findAll()).thenReturn(expectedDates);
+
+    // act
+    MvcResult response =
+        mockMvc.perform(get("/api/ucsbdates/all")).andExpect(status().isOk()).andReturn();
+
+    // assert
+
+    verify(ucsbDateRepository, times(1)).findAll();
+    String expectedJson = mapper.writeValueAsString(expectedDates);
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void an_admin_user_can_post_a_new_ucsbdate() throws Exception {
+    // arrange
+
+    LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");
+
+    UCSBDate ucsbDate1 =
+        UCSBDate.builder()
+            .name("firstDayOfClasses")
+            .quarterYYYYQ("20222")
+            .localDateTime(ldt1)
+            .build();
+
+    when(ucsbDateRepository.save(eq(ucsbDate1))).thenReturn(ucsbDate1);
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(
+                post("/api/ucsbdates/post?name=firstDayOfClasses&quarterYYYYQ=20222&localDateTime=2022-01-03T00:00:00")
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(ucsbDateRepository, times(1)).save(ucsbDate1);
+    String expectedJson = mapper.writeValueAsString(ucsbDate1);
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_can_delete_a_date() throws Exception {
+    // arrange
+
+    LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");
+
+    UCSBDate ucsbDate1 =
+        UCSBDate.builder()
+            .name("firstDayOfClasses")
+            .quarterYYYYQ("20222")
+            .localDateTime(ldt1)
+            .build();
+
+    when(ucsbDateRepository.findById(eq(15L))).thenReturn(Optional.of(ucsbDate1));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/ucsbdates?id=15").with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(ucsbDateRepository, times(1)).findById(15L);
+    verify(ucsbDateRepository, times(1)).delete(any());
+
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("UCSBDate with id 15 deleted", json.get("message"));
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_tries_to_delete_non_existant_ucsbdate_and_gets_right_error_message()
+      throws Exception {
+    // arrange
+
+    when(ucsbDateRepository.findById(eq(15L))).thenReturn(Optional.empty());
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/ucsbdates?id=15").with(csrf()))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    // assert
+    verify(ucsbDateRepository, times(1)).findById(15L);
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("UCSBDate with id 15 not found", json.get("message"));
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_can_edit_an_existing_ucsbdate() throws Exception {
+    // arrange
+
+    LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");
+    LocalDateTime ldt2 = LocalDateTime.parse("2023-01-03T00:00:00");
+
+    UCSBDate ucsbDateOrig =
+        UCSBDate.builder()
+            .name("firstDayOfClasses")
+            .quarterYYYYQ("20222")
+            .localDateTime(ldt1)
+            .build();
+
+    UCSBDate ucsbDateEdited =
+        UCSBDate.builder()
+            .name("firstDayOfFestivus")
+            .quarterYYYYQ("20232")
+            .localDateTime(ldt2)
+            .build();
+
+    String requestBody = mapper.writeValueAsString(ucsbDateEdited);
+
+    when(ucsbDateRepository.findById(eq(67L))).thenReturn(Optional.of(ucsbDateOrig));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(
+                put("/api/ucsbdates?id=67")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding("utf-8")
+                    .content(requestBody)
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(ucsbDateRepository, times(1)).findById(67L);
+    verify(ucsbDateRepository, times(1)).save(ucsbDateEdited); // should be saved with correct user
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(requestBody, responseString);
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_cannot_edit_ucsbdate_that_does_not_exist() throws Exception {
+    // arrange
+
+    LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");
+
+    UCSBDate ucsbEditedDate =
+        UCSBDate.builder()
+            .name("firstDayOfClasses")
+            .quarterYYYYQ("20222")
+            .localDateTime(ldt1)
+            .build();
+
+    String requestBody = mapper.writeValueAsString(ucsbEditedDate);
+
+    when(ucsbDateRepository.findById(eq(67L))).thenReturn(Optional.empty());
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(
+                put("/api/ucsbdates?id=67")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding("utf-8")
+                    .content(requestBody)
+                    .with(csrf()))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    // assert
+    verify(ucsbDateRepository, times(1)).findById(67L);
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("UCSBDate with id 67 not found", json.get("message"));
   }
 }

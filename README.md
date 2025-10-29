@@ -2,12 +2,10 @@
 
 Instructions: <https://ucsb-cs156.github.io/f25/lab/team01.html>
 
-TODO: Add a link to the deployed Dokku app for your team here, e.g.
-
 Deployments:
 
 * Prod: <https://team01.dokku-04.cs.ucsb.edu/>
-* QA: <https://team01-db.dokku-04.cs.ucsb.edu>
+* QA: <https://team01-qa-db.dokku-04.cs.ucsb.edu/>
 
 | Table                     | Name              |   Github Id  |
 |---------------------------|-------------------|--------------|

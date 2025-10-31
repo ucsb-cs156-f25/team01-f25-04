@@ -23,4 +23,4 @@ repo_name: "TBD"
 repo: ucsb-cs156-f25/team01-f25-04
 owner: ucsb-cs156-f25
 repo_name: team01-f25-04
-pull_requests: [{"author":{"id":"U_kgDOCM7m8g","is_bot":false,"login":"ChiranArumugam","name":"Chiran Arumugam"},"headRefName":"ca-team01-hotfix","number":81,"title":"ca - hotfix","url":"https://github.com/ucsb-cs156-f25/team01-f25-04/pull/81"},{"author":{"id":"U_kgDODQ5OSw","is_bot":false,"login":"davey-j1","name":""},"headRefName":"change-database-ucsborganization","number":80,"title":"Rename columns in UCSBOrganization.json","url":"https://github.com/ucsb-cs156-f25/team01-f25-04/pull/80"}]
+pull_requests: [{"author":{"id":"U_kgDODQ5OSw","is_bot":false,"login":"davey-j1","name":""},"headRefName":"change-database-ucsborganization","number":80,"title":"Rename columns in UCSBOrganization.json","url":"https://github.com/ucsb-cs156-f25/team01-f25-04/pull/80"}]

@@ -27,25 +27,25 @@
                         "primaryKey": true,
                         "primaryKeyName": "UCSBORGANIZATION_PK"
                       },
-                      "name": "ORGCODE",
+                      "name": "org_code",
                       "type": "VARCHAR(255)"
                     }
                   },
                   {
                     "column": {
-                      "name": "ORGTRANSLATIONSHORT",
+                      "name": "org_translation_short",
                       "type": "VARCHAR(255)"
                     }
                   },
                   {
                     "column": {
-                      "name": "ORGTRANSLATION",
+                      "name": "org_translation",
                       "type": "VARCHAR(255)"
                     }
                   },
                   {
                     "column": {
-                      "name": "INACTIVE",
+                      "name": "inactive",
                       "type": "BOOLEAN"
                     }
                   }]
